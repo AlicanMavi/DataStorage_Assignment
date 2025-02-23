@@ -1,10 +1,9 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
 {
-public enum ProjectStatus
+    public enum ProjectStatus
 {
     EjPaborjat,
     PaaGorande,
@@ -42,18 +41,17 @@ public class ProjectEntity
 
     public int ProductId { get; set; }
     public ProductEntity Product { get; set; } = null!;
-        public string Title { get; set; }
 
         public ProjectEntity()
-    {
-        ProjectNumber = GenerateProjectNumber();
-    }
+        {
+            ProjectNumber = GenerateProjectNumber();
+        }
 
-    private string GenerateProjectNumber()
-    {
-        Random rnd = new Random();
-        int num = rnd.Next(100, 1000);
-        return $"P-{num}";
+        private string GenerateProjectNumber()
+        {
+            Random rnd = new Random();
+            int num = rnd.Next(100, 1000);
+            return $"P-{num}";
+        }
     }
-}
 }

@@ -39,8 +39,18 @@ namespace Data.Repositories
 
         public async Task AddAsync(ProjectEntity entity)
         {
-            await _context.Set<ProjectEntity>().AddAsync(entity);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.Projects.AddAsync(entity);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Fel vid sparande av projekt: " + ex.Message);
+                if (ex.InnerException != null)
+                    Console.WriteLine("Inner Exception: " + ex.InnerException.Message);
+                throw;
+            }
         }
 
         public async Task UpdateAsync(ProjectEntity entity)

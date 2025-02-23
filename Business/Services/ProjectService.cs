@@ -37,7 +37,7 @@ public class ProjectService
         var entity = await _projectRepository.GetByIdAsync(model.Id);
         if (entity != null)
         {
-            entity.Title = model.Name;
+            entity.Name = model.Name;
             entity.StartDate = model.StartDate;
             entity.EndDate = model.EndDate;
             entity.ProjectManager = model.ProjectManager;

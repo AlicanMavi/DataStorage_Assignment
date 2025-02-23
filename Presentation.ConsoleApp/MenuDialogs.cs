@@ -114,7 +114,13 @@ namespace Presentation.ConsoleApp
             Console.WriteLine("--- Skapa ett nytt projekt ---");
 
             Console.Write("Ange projektnamn: ");
-            string name = Console.ReadLine() ?? "";
+            string name = Console.ReadLine()?.Trim() ?? "";
+            if (string.IsNullOrEmpty(name))
+            {
+                Console.WriteLine("Projektnamn är obligatoriskt. Försök igen.");
+                Console.ReadKey();
+                return;
+            }
 
             Console.Write("Ange startdatum (yyyy-mm-dd): ");
             DateTime startDate = DateTime.Parse(Console.ReadLine() ?? "");
@@ -125,17 +131,27 @@ namespace Presentation.ConsoleApp
             Console.Write("Ange projektansvarig: ");
             string projectManager = Console.ReadLine() ?? "";
 
-            Console.Write("Ange kund-ID: ");
-            int customerId = int.Parse(Console.ReadLine() ?? "");
+            Console.Write("Ange Befintlig kund-ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int customerId))
+            {
+                Console.WriteLine("Ogiltigt kund-ID.");
+                Console.ReadKey();
+                return;
+            }
 
-            Console.Write("Ange Tjänstebeskrivning (ex. konsulttid 1000kr/tim): ");
+            var customer = await _customerService.GetCustomerByIdAsync(customerId);
+            if (customer == null)
+            {
+                Console.WriteLine("Kunden med det angivna ID:t finns inte. Försök igen.");
+                Console.ReadKey();
+                return;
+            }
+
+            Console.Write("Ange tjänstebeskrivning (ex. konsulttid 1000kr/tim): ");
             string serviceDescription = Console.ReadLine() ?? "";
 
             Console.Write("Ange totalpris: ");
             decimal totalPrice = decimal.Parse(Console.ReadLine() ?? "0");
-
-            Console.Write("Ange status (EjPaborjat, PaaGorande, Avslutat): ");
-            string status = Console.ReadLine() ?? "EjPaborjat";
 
             var model = new Business.Models.ProjectModel
             {
@@ -146,7 +162,7 @@ namespace Presentation.ConsoleApp
                 CustomerId = customerId,
                 ServiceDescription = serviceDescription,
                 TotalPrice = totalPrice,
-                Status = status,
+               
             };
 
             await _projectService.CreateProjectAsync(model);
@@ -154,6 +170,7 @@ namespace Presentation.ConsoleApp
             Console.WriteLine("Projektet har skapats! Tryck på en tangent för att återgå till menyn.");
             Console.ReadKey();
         }
+
 
         private async Task ListAllCustomers()
         {
@@ -173,7 +190,7 @@ namespace Presentation.ConsoleApp
                 {
                     foreach (var customer in customers)
                     {
-                        Console.WriteLine($"ID: {customer?.Id}, Namn: {customer?.CustomerName}");
+                        Console.WriteLine($"ID: {customer?.Id}, Namn: {customer?.CustomerName}, Email: {customer?.CustomerEmail}, PhoneNumber: {customer?.CustomerPhoneNumber}");
                     }
                 }
             }
@@ -221,7 +238,7 @@ namespace Presentation.ConsoleApp
             var customer = await _customerService.GetCustomerByIdAsync(id);
             if (customer != null)
             {
-                Console.WriteLine($"Kund: ID: {customer.Id}, Namn: {customer.CustomerName}");
+                Console.WriteLine($"ID: {customer?.Id}, Namn: {customer?.CustomerName}, Email: {customer?.CustomerEmail}, PhoneNumber: {customer?.CustomerPhoneNumber}");
             }
             else
             {
